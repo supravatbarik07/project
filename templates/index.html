@@ -1,0 +1,79 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Messaging Service</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+</head>
+<body>
+    <h1>WhatsApp Messaging Service</h1>
+
+    <!-- Section to send a simple text message -->
+    <div>
+        <h2>Send Text Message</h2>
+        <input type="text" id="text_phone" placeholder="Phone Number (e.g., 919861781550)">
+        <textarea id="text_message" placeholder="Enter your message"></textarea>
+        <button onclick="sendTextMessage()">Send Text Message</button>
+        <p id="text_response"></p>
+    </div>
+
+    <hr>
+
+    <!-- Section to send a template message
+    <div>
+        <h2>Send Template Message</h2>
+        <input type="text" id="template_phone" placeholder="Phone Number (e.g., 919861781550)">
+        <select id="template_name">
+            Prepopulate with "hello_world" template -->
+            <!-- <option value="hello_world">hello_world</option>
+        </select>
+        <button onclick="sendTemplateMessage()">Send Template Message</button>
+        <p id="template_response"></p>
+    </div> -->
+
+    <!-- <hr> -->
+
+    <!-- Section to send bulk template messages -->
+    <div>
+        <h2>Send Bulk Template Messages</h2>
+        <textarea id="bulk_phone_numbers" placeholder="Enter phone numbers separated by commas (e.g., 919861781550, 919876543210)"></textarea>
+        <select id="bulk_template_name">
+            <option value="hello_world">hello_world</option>
+        </select>
+        <button onclick="sendBulkMessages()">Send Bulk Messages</button>
+        <p id="bulk_response"></p>
+    </div>
+
+    <div>
+        <h2>Send Bulk excel Template Messages</h2>
+         <p>upload an Excel file:</p>
+        <input type="file" id="bulk_file_input" accept=".xls,.xlsx"><br>
+        <select id="bulk_excel_template_name">
+            <option value="hello_world">hello_world</option>
+        </select>
+        <button onclick="sendExcelBulkMessages()">Send Bulk Messages from Excel</button><br>
+        <button id="btn">Clear File</button>
+        <p id="excel_response"></p>
+    </div>
+
+    <h1>Send Messages to Department Employees</h1>
+
+    <!-- Department selection -->
+    <div>
+        <label for="department_dropdown">Select Department:</label>
+        <select id="department_dropdown">
+            <option value="">-- Select a Department --</option>
+        </select>
+        <select id="message_to_department">
+            <option value="hello_world">hello_world</option>
+        </select>
+        <button onclick="sendDepartmentMessages()">Send Messages</button>
+        <p id="department_response"></p>
+    </div>
+    <script src="/static/script.js?v=1.0.1"></script>
+</body>
+</html>
