@@ -17,7 +17,7 @@ VERIFY_TOKEN = 'your_verify_token_here'  # Replace with your actual token
 
 # WhatsApp API configurations
 WHATSAPP_API_URL = 'https://graph.facebook.com/v21.0/428645750337871/messages'
-ACCESS_TOKEN = 'EAAPOHcHRIdcBO6SMakK0lRO2VvpytdZCNNjPolTk2PYkMemnHX14ZCD0ebXulcdZAkeuAywJdmc2TZBm6O84QnVYVPZBm4ZCyAZADju9ZCAsQN6bWtrhpmJnFnJpVhtnOMgccBe6gx9fyPM1hTxlt9wnPTTsnAX0XnLpnm9jP8VxhK5mEJU8fRKS1fYCUZA1ovdmNEBcUk1ZCpBh06Vz0Weh1FZBcBjOWYZD'
+ACCESS_TOKEN = 'EAAPOHcHRIdcBO1dHhaCMYFAouIU1VnESVHEv8rxvAMM2oAFkH9DErPDuZBtKjPdZCL0r2NhCiTqYllWWQNF1vHyTiFzCKZBjH2DIZC6PKC74Quibsd3JRx1ramV2iuWGih0cFGc9IRG5rPB2iqM9zZC0rZCepFc7uZAx0CpkgWsnfSXsqpZCqumLY1QIds1iCTfo81ZChg4kwh8jCZAQJqab0zCoLF34IZD'
 PHONE_NUMBER_ID = '389615060912251'
 
 
@@ -61,6 +61,7 @@ def is_opt_in(phone_number):
 
         if not employee:
             # Phone number not found in employee_details table
+            print(f"{normalized_phone_number}: Doesn't belongs to our organization")
             cursor.close()
             connection.close()
             return {"status": False, "message": "This number can't be found in our employee table."}
@@ -115,7 +116,13 @@ def send_whatsapp_template_message(phone_number, template_name):
         }
     }
     response = requests.post(WHATSAPP_API_URL, headers=headers, json=data)
-    return response.json()
+    response_data = response.json()
+    if response.status_code != 200 or 'error' in response_data:
+        error_message = response_data.get('error', {}).get('message', 'Unknown error occurred')
+        print(f"Error sending template message to {phone_number}: {error_message}")
+        return {"status": False, "error": error_message}
+
+    return {"status": True, "response": response_data}
 
 # Function to send a plain text message via WhatsApp API
 def send_whatsapp_text_message(phone_number, message):
@@ -133,7 +140,13 @@ def send_whatsapp_text_message(phone_number, message):
     }
 
     response = requests.post(WHATSAPP_API_URL, headers=headers, json=data)
-    return response.json()
+    response_data = response.json()
+
+    if response.status_code != 200 or 'error' in response_data:
+        error_message = response_data.get('error', {}).get('message', 'Unknown error occurred')
+        print(f"Error sending text message to {phone_number}: {error_message}")
+        return {"status": False, "error": error_message}
+    return {"status": True, "response": response_data}
 
 # Webhook endpoint for verification
 @app.route('/webhook', methods=['GET', 'POST'])
@@ -167,7 +180,7 @@ def get_templates():
         'Authorization': f'Bearer {ACCESS_TOKEN}'
     }
     response = requests.get(f'https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/message_templates', headers=headers)
-
+    response_data = response.json()
     if response.status_code == 200:
         templates = response.json().get('data', [])
         default_template = "hello_world"
@@ -177,9 +190,10 @@ def get_templates():
         return jsonify({"templates": template_names})
     else:
         # Log the error details for debugging
-        print("Error fetching templates:", response.json())
-        return jsonify({"error": "Failed to fetch templates", "details": response.json()}), 500
-    
+       error_message = response_data.get('error', {}).get('message', 'Unknown error occurred')
+       print(f"Error fetching templates: {error_message}")
+       return jsonify({"error": error_message}), 500
+
    # Endpoint to send a template message
 @app.route('/send-message', methods=['POST'])
 def send_message():
@@ -197,6 +211,9 @@ def send_message():
 
     response = send_whatsapp_template_message(phone_number, template_name)
 
+
+    if not response["status"]:
+        return jsonify({"error": response["error"]}), 400
     # Print response to console
     print(f"Response from WhatsApp API for {phone_number}: {response}")
 
@@ -218,7 +235,9 @@ def send_text_message():
         return jsonify({"error": opt_in_status["message"]}), 400
 
     response = send_whatsapp_text_message(phone_number, message)
-
+    
+    if not response["status"]:
+        return jsonify({"error": response["error"]}), 400
     # Print response to console
     print(f"Response from WhatsApp API for {phone_number}: {response}")
 
@@ -251,15 +270,24 @@ def send_bulk_messages():
             # If the phone number is opted-in, send the message
             response = send_whatsapp_template_message(phone_number, template_name)
             
+            # Check the response status
+            if not response["status"]:
+                results.append({
+                    "phone_number": phone_number,
+                    "error": response["error"]
+                })
+            else:
+                results.append({
+                    "phone_number": phone_number,
+                    "response": response
+                })
+
             # Print response to console
             print(f"Response from WhatsApp API for {phone_number}: {response}")
-            
-            results.append({
-                "phone_number": phone_number,
-                "response": response
-            })
 
     return jsonify(results)
+
+
 #message Using department name
 @app.route('/departments', methods=['GET'])
 def get_departments():
@@ -299,17 +327,40 @@ def send_department_message():
 
         # Simulate sending messages
         sent_messages = []
+        errors = []
         for phone_number in phone_numbers:
             response = send_whatsapp_template_message(phone_number, template_name)
-            sent_messages.append({"phone_number": phone_number, "response": response})
-            print(f"Message sent to {phone_number}: {response}")
+
+            if not response["status"]:
+                errors.append({
+                    "phone_number": phone_number,
+                    "error": response["error"]
+                })
+                print(f"Error sending message to {phone_number}: {response['error']}")
+            else:
+                sent_messages.append({
+                    "phone_number": phone_number,
+                    "response": response
+                })
+                print(f"Message sent to {phone_number}: {response}")
 
         cursor.close()
         connection.close()
 
-        print(f"Successfully processed {len(sent_messages)} messages for the {department} department.")
-        return jsonify({"sent_messages": sent_messages})
-        
+        result = {
+            "sent_messages": sent_messages,
+            "errors": errors,
+            "summary": {
+                "total": len(phone_numbers),
+                "successful": len(sent_messages),
+                "failed": len(errors)
+            }
+        }
+
+        print(f"Successfully processed {len(sent_messages)} messages and encountered {len(errors)} errors for the {department} department.")
+        print(f"Encountered error:- {errors}")
+        return jsonify(result)
+
     except Exception as e:
         error_message = f"An unexpected error occurred: {e}"
         print(f"Error: {error_message}")

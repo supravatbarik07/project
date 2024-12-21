@@ -25,10 +25,12 @@ async function fetchTemplates() {
                 }
             });
         } else {
-            console.error('Failed to fetch templates:', result);
+            alert('Failed to fetch templates: Please Verify the Meta Token')
+            //console.error('Failed to fetch templates:', result.error);
         }
     } catch (error) {
         console.error('Error fetching templates:', error);
+        //alert('Error fetching templates:')
     }
 }
 
@@ -72,7 +74,7 @@ async function sendTextMessage() {
         });
         const result = await response.json();
         if (result.error) {
-            document.getElementById('text_response').innerText = result.error;
+            document.getElementById('text_response').innerText = `${result.phone_number} ${result.error}`;
         } else {
             document.getElementById('text_response').innerText = JSON.stringify(result, null, 2);
         }
@@ -145,7 +147,7 @@ async function sendBulkMessages() {
         console.log(result)
         result.forEach(results=>{
             if(results.hasOwnProperty('error')){
-                document.getElementById('bulk_response').innerText += `The ${results.phone_number} is not found In Employee tables\n`;
+                document.getElementById('bulk_response').innerText += `The ${results.phone_number}  ${results.error}\n`;
                 
             //     alert('Invalid phone number or template error!');
             }
@@ -229,10 +231,10 @@ async function sendExcelBulkMessages() {
 
         const result = await response.json();
         document.getElementById('excel_response').innerText = '';
-
+        console.log(result);
         result.forEach(results => {
             if (results.hasOwnProperty('error')) {
-                document.getElementById('excel_response').innerText += `The ${results.phone_number} is not found in Employee tables\n`;
+                document.getElementById('excel_response').innerText += `${results.phone_number} ${results.error}\n`;
             } else {
                 document.getElementById('excel_response').innerText += `Message sent successfully to ${results.phone_number}\n`;
             }
@@ -267,11 +269,17 @@ async function sendDepartmentMessages() {
         });
 
         const result = await response.json();
+        console.log(result);
         if (result) {
             document.getElementById('department_response').innerText = `Message Sent to ${department} Department`;
         } else {
             document.getElementById('department_response').innerText = `Message Sending error  to ${department} Department`;
         }
+        if(result.errors.length!=0){
+            result.errors.forEach(errors_counted=>{
+               document.getElementById('department_error_response').innerText = `Error encounted number: ${errors_counted.phone_number} Error_desc: ${errors_counted.error}`;
+            })
+       }
     } catch (error) {
         document.getElementById('department_response').innerText = `error in sending department message`;
     }
