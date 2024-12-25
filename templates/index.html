@@ -10,31 +10,21 @@
 
 </head>
 <body>
+    
     <h1>WhatsApp Messaging Service</h1>
 
-    <!-- Section to send a simple text message -->
-    <div>
-        <h2>Send Text Message</h2>
-        <input type="text" id="text_phone" placeholder="Phone Number (e.g., 919861781550)">
-        <textarea id="text_message" placeholder="Enter your message"></textarea>
-        <button onclick="sendTextMessage()">Send Text Message</button>
-        <p id="text_response"></p>
+    <div class="inputs_from_user">
+        <label for="">Fill meta Token</label>
+        <input type="text" id="meta_token_input" placeholder="Please put your Meta_token"></input><br>
+        <label for="">Phone number ID</label>
+        <input type="number" id="phone_number_id" placeholder="Please put your Phone number ID"><br>
+        <label for="">WhatsApp Business Account ID</label>
+        <input type="number" id="whatsApp_business_Account_id" placeholder="Please put your WhatsApp Business Account ID"><br>
+        <button id="meta_details">Submit_details</button>
     </div>
-
     <hr>
 
-    <!-- Section to send a template message
-    <div>
-        <h2>Send Template Message</h2>
-        <input type="text" id="template_phone" placeholder="Phone Number (e.g., 919861781550)">
-        <select id="template_name">
-            Prepopulate with "hello_world" template -->
-            <!-- <option value="hello_world">hello_world</option>
-        </select>
-        <button onclick="sendTemplateMessage()">Send Template Message</button>
-        <p id="template_response"></p>
-    </div> -->
-
+    
     <!-- <hr> -->
 
     <!-- Section to send bulk template messages -->

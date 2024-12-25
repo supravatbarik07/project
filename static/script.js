@@ -1,6 +1,32 @@
  
 const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
 
+
+//update meta Token, Phone_number_id, whatsapp_number_id
+const meta_update_token=document.getElementById('meta_details');
+async function updateMetaDetails() {
+    const meta_token_input=document.getElementById('meta_token_input').value.trim();
+    const phone_number_id=document.getElementById('phone_number_id').value.trim();
+    const whatsApp_business_Account_id=document.getElementById('whatsApp_business_Account_id').value.trim();
+    
+    const response=await fetch(`${backendUrl}/update-config`,{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: meta_token_input || null, 
+            phone_number_id: phone_number_id || null, 
+            whatsApp_business_account_id: whatsApp_business_Account_id || null})
+    })
+
+    const result= await response.json();
+    console.log(result)
+    if(response.ok){
+        alert('Recored updeted successfully')
+    }else{
+        alert('somthing error'+result)
+    }
+}
+meta_update_token.addEventListener('click',updateMetaDetails);
+
 // Fetch and populate additional templates in the dropdown
 async function fetchTemplates() {
     try {
@@ -54,64 +80,6 @@ async function fetchDepartments() {
 // Call this function to fetch templates and departments when the page loads
 window.addEventListener('load', fetchTemplates);
 window.addEventListener('load', fetchDepartments);
-
-
-// Function to send a text message
-async function sendTextMessage() {
-    const phone = document.getElementById('text_phone').value;
-    const message = document.getElementById('text_message').value;
-
-    if (!phone || !message) {
-        document.getElementById('text_response').innerText = "Please provide a phone number and message text.";
-        return;
-    }
-
-    try {
-        const response = await fetch(`${backendUrl}/send-text-message`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone_number: phone, message: message })
-        });
-        const result = await response.json();
-        if (result.error) {
-            document.getElementById('text_response').innerText = `${result.phone_number} ${result.error}`;
-        } else {
-            document.getElementById('text_response').innerText = JSON.stringify(result, null, 2);
-        }
-    } catch (error) {
-        document.getElementById('text_response').innerText = "Error sending text message.";
-        console.error(error);
-    }
-}
-
-// // Function to send a template message
-// async function sendTemplateMessage() {
-//     const phone = document.getElementById('template_phone').value;
-//     const templateName = document.getElementById('template_name').value;
-
-//     if (!phone || !templateName) {
-//         document.getElementById('template_response').innerText = "Please provide a phone number and select a template.";
-//         return;
-//     }
-
-//     try {
-//         const response = await fetch(`${backendUrl}/send-message`, {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ phone_number: phone, template_name: templateName })
-//         });
-//         const result = await response.json();
-//         if (result.error) {
-//             document.getElementById('template_response').innerText = result.error;
-//         } else {
-//             document.getElementById('template_response').innerText = JSON.stringify(result, null, 2);
-//         }
-//     } catch (error) {
-//         document.getElementById('template_response').innerText = "Error sending template message.";
-//         console.error(error);
-//     }
-// }
-
 
 //Bulk messaging
 async function sendBulkMessages() {

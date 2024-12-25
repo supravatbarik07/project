@@ -5,6 +5,8 @@ from flask_cors import CORS
 import requests
 import openpyxl
 import tempfile
+import time
+from threading import Thread, Lock
 
 app = Flask(__name__)
 
@@ -16,11 +18,16 @@ VERIFY_TOKEN = 'your_verify_token_here'  # Replace with your actual token
 
 
 # WhatsApp API configurations
-WHATSAPP_API_URL = 'https://graph.facebook.com/v21.0/428645750337871/messages'
-ACCESS_TOKEN = 'EAAPOHcHRIdcBO1dHhaCMYFAouIU1VnESVHEv8rxvAMM2oAFkH9DErPDuZBtKjPdZCL0r2NhCiTqYllWWQNF1vHyTiFzCKZBjH2DIZC6PKC74Quibsd3JRx1ramV2iuWGih0cFGc9IRG5rPB2iqM9zZC0rZCepFc7uZAx0CpkgWsnfSXsqpZCqumLY1QIds1iCTfo81ZChg4kwh8jCZAQJqab0zCoLF34IZD'
-PHONE_NUMBER_ID = '389615060912251'
+#WHATSAPP_API_URL = f"https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/messages"
+# ACCESS_TOKEN = 'EAAPOHcHRIdcBO3hrD8bBUVZBZAs7khfuDmmZCXmyZBicZC42N0CqgI85mtk4tZCP1hTTcAZCgPPp1jV3OO25YaeVLDV390SkBb4nVgrg7RqjZAYZAWdRrEbd3PIyk9qFxOGRJ4nu7LNnzhhWJXLwXWuKHIn4YluKeL3peyGopodTajT8xs4mBd2KLLpuvNGgKUrhldu0aC65PxfeYFXZBZAlMUhzqvMnHIZD'
+# PHONE_NUMBER_ID = config[]
 
-
+# Global variables with lock for thread-safe updates
+config_lock = Lock()
+ACCESS_TOKEN = None
+PHONE_NUMBER_ID = None
+WHATSAPP_BUSINESS_ACCOUNT_ID = None
+WHATSAPP_API_URL = None
 # PostgreSQL Database connection details
 DB_CONFIG = {
     'user': 'c##supravat',
@@ -28,6 +35,132 @@ DB_CONFIG = {
     'dsn': 'orcl',  # Replace 'XEPDB1' with your Oracle Service Name
     'encoding': 'UTF-8'
 }
+def get_db_connection():
+    try:
+        connection = cx_Oracle.connect(**DB_CONFIG)
+        return connection
+    except cx_Oracle.Error as e:
+        print(f"Database connection error: {e}")
+        raise
+# Function to fetch the current configuration from the database
+def fetch_config_from_db():
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        query = "SELECT access_token, phone_number_id, whatsApp_business_account_id FROM whatsapp_config WHERE ROWNUM = 1"
+        cursor.execute(query)
+        config = cursor.fetchone()
+        cursor.close()
+        connection.close()
+
+        if config:
+            return {
+                "access_token": config[0],
+                "phone_number_id": config[1],
+                "whatsApp_business_account_id": config[2]
+            }
+        else:
+            return None
+    except cx_Oracle.Error as e:
+        print(f"Error fetching configuration: {e}")
+        return None
+
+# Fetching the configuration
+def fetch_access_token_periodically():
+    global ACCESS_TOKEN, PHONE_NUMBER_ID, WHATSAPP_BUSINESS_ACCOUNT_ID, WHATSAPP_API_URL
+
+    while True:
+        try:
+            config = fetch_config_from_db()
+            if config:
+                with config_lock:
+                    ACCESS_TOKEN = config["access_token"]
+                    PHONE_NUMBER_ID = config["phone_number_id"]
+                    WHATSAPP_BUSINESS_ACCOUNT_ID = config["whatsApp_business_account_id"]
+                    WHATSAPP_API_URL = f"https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/messages"
+                    # print("Updated configuration applied.")
+            else:
+                print("No configuration found in the database.")
+        except Exception as e:
+            print(f"Error fetching configuration periodically: {e}")
+        
+        time.sleep(5)  # Fetch updates every 60 seconds
+
+# API to manually update configuration
+@app.route('/monitor-changes', methods=['POST'])
+def monitor_changes():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    success = update_config_in_db(
+        access_token=data.get('access_token'),
+        phone_number_id=data.get('phone_number_id'),
+        whatsApp_business_account_id=data.get('whatsApp_business_account_id')
+    )
+    if success:
+        return jsonify({"message": "Configuration updated successfully"}), 200
+    return jsonify({"error": "Failed to update configuration"}), 500
+
+# Function to update the WhatsApp configuration dynamically
+# Update configuration in the database
+def update_config_in_db(access_token=None, phone_number_id=None, whatsApp_business_account_id=None):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        query_parts = []
+        query_params = {}
+
+        if access_token:
+            query_parts.append("access_token = :access_token")
+            query_params["access_token"] = access_token
+        if phone_number_id:
+            query_parts.append("phone_number_id = :phone_number_id")
+            query_params["phone_number_id"] = phone_number_id
+        if whatsApp_business_account_id:
+            query_parts.append("whatsApp_business_account_id = :whatsApp_business_account_id")
+            query_params["whatsApp_business_account_id"] = whatsApp_business_account_id
+
+        if not query_parts:
+            raise ValueError("No fields provided for update.")
+
+        query = f"UPDATE whatsapp_config SET {', '.join(query_parts)}, last_updated = SYSTIMESTAMP WHERE ROWNUM = 1"
+        cursor.execute(query, query_params)
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return True
+    except cx_Oracle.Error as e:
+        print(f"Error updating configuration: {e}")
+        return False
+    except ValueError as ve:
+        print(ve)
+        return False
+
+        
+# Endpoint to update the configuration
+@app.route('/update-config', methods=['POST'])
+def update_config():
+    data = request.get_json()
+    new_access_token = data.get('access_token')
+    new_phone_number_id = data.get('phone_number_id')
+    whatsApp_business_account_id = data.get('whatsApp_business_account_id')
+
+    # Validate at least one field must be provided
+    if not new_access_token and not new_phone_number_id and not whatsApp_business_account_id:
+        return jsonify({"error": "At least one field (access_token, phone_number_id, or whatsApp_business_account_id) must be provided"}), 400
+
+    # Update the database
+    success = update_config_in_db(
+        access_token=new_access_token,
+        phone_number_id=new_phone_number_id,
+        whatsApp_business_account_id=whatsApp_business_account_id
+    )
+
+    if success:
+        return jsonify({"message": "Configuration updated successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to update configuration"}), 500
 
 
 # Function to get a database connection
@@ -179,7 +312,7 @@ def get_templates():
     headers = {
         'Authorization': f'Bearer {ACCESS_TOKEN}'
     }
-    response = requests.get(f'https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/message_templates', headers=headers)
+    response = requests.get(f'https://graph.facebook.com/v21.0/{WHATSAPP_BUSINESS_ACCOUNT_ID}/message_templates', headers=headers)
     response_data = response.json()
     if response.status_code == 200:
         templates = response.json().get('data', [])
@@ -367,4 +500,5 @@ def send_department_message():
         return jsonify({"error": error_message}), 500
 
 if __name__ == '__main__':
+    Thread(target=fetch_access_token_periodically, daemon=True).start()
     app.run(debug=True, port=5500)
