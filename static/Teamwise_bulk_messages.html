@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Send Messages to Department Employees</h1>
+
+    <!-- Department selection -->
+    <div>
+        <label for="department_dropdown">Select Department:</label>
+        <select id="department_dropdown">
+            <option value="">-- Select a Department --</option>
+        </select>
+        <select id="message_to_department">
+            <option value="hello_world">hello_world</option>
+        </select>
+        <button id="sendDepartmentMessages">Send Messages</button>
+        <p id="department_response"></p>
+        <p id="department_error_response"></p>
+    </div>
+    <script  type="module" src="teamwise_bulk_messages.js"></script>
+</body>
+</html>
