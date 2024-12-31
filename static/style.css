@@ -13,6 +13,12 @@ nav{
     border-radius: 5px;
     /* background: rgb(2,0,36); */
     background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .selection{
     display: flex;
@@ -54,7 +60,7 @@ nav{
     background-color: rgb(48, 48, 56);
     color: azure;
 }
-button{
+.option_menu{
     background: none;
     border:none;
     cursor: pointer;
@@ -62,3 +68,129 @@ button{
 .options a:hover{
     background-color: rgb(83, 86, 88);
 } 
+/***********************************SubHtml Design*****************************/
+
+section{
+    height: 100vh;
+    /* border: 1px solid red; */
+    overflow-y: auto; /* Allow scrolling */
+    -ms-overflow-style: none; /* Hide scrollbar in IE 10+ */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+section::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Chrome, Edge, and Safari */
+}
+section h1{
+    font-size: 2em; /* Adjust font size as needed */
+    font-weight: bold; /* Optional: Make text bold */
+    background: linear-gradient(90deg, red, blue); /* Define gradient colors */
+    -webkit-background-clip: text; /* Clip the gradient to the text */
+    -webkit-text-fill-color: transparent; /* Make the text transparent to show the gradient */
+    background-clip: text; /* Standard background-clip property */
+    text-fill-color: transparent; /* Standard text fill property */
+}
+section > .inputs_from_user{
+    width: 40%;
+    /* border: 1px solid red; */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 1em;
+    box-shadow: 0 8px 15px rgba(237, 111, 111, 0.2); 
+    border-radius: 10px;
+}
+input {
+    /* text-align: center; Center placeholder horizontally */
+    padding: 0.5rem; /* Add some padding for better spacing */
+    font-size: 1rem; /* Adjust font size */
+    height: 2.5rem; /* Set the height to ensure vertical centering */
+    box-sizing: border-box; /* Prevent padding from increasing the input size */
+    border-radius: 5px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+input:hover{
+    transform: translateY(-5px); /* Slightly move up */
+    box-shadow: 0 8px 15px rgba(237, 111, 111, 0.2); /* Add shadow for depth */
+}
+.meta_details{
+    background: rgb(131,58,180);
+    background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+    border-radius: 5px;
+    border: none;
+    color: azure;
+    cursor: pointer;
+    padding: 5px 20px;
+    width: auto;
+    margin-left: 0;
+    font-size: 1em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.meta_details:hover{
+    transform: translateY(-5px); /* Slightly move up */
+    box-shadow: 0 8px 15px rgba(237, 101, 16, 0.2); /* Add shadow for depth */ 
+}
+
+textarea {
+    width: 100%;
+    height: 50px; 
+    resize: none; 
+    padding: 10px;
+    font-size: 1rem; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    box-sizing: border-box; /* Ensures padding is included in width/height */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+textarea:hover{
+    transform: translateY(-5px); /* Slightly move up */
+    box-shadow: 0 8px 15px rgba(237, 111, 111, 0.2); /* Add shadow for depth */
+}
+.inputs_from_user .box{
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+    gap: 20px;
+}
+#excel_input{
+    display: flex;
+    gap: 5px;
+}
+.btns{
+    display: flex; 
+    gap: 10px; 
+    justify-content: space-evenly;
+    margin-top: 20px; 
+}
+#bulk_file_input{
+    width: 50%;
+}
+select{
+    width: 200px; /* Set the desired width */
+    padding: 5px; /* Add padding for better appearance */
+    font-size: 1rem; /* Adjust font size */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    box-sizing: border-box; /* Ensures padding is included in the width */
+    transition: box-shadow 0.2s ease; /* Add a hover effect (optional) */
+    cursor: pointer;
+}
+select:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional hover shadow effect */
+}
+.department,.temp{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.emp_deprt{
+    display: flex;
+    justify-content: space-around;
+}
+#sendDepartmentMessages{
+    margin-top: 5rem;
+}

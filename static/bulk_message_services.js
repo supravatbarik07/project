@@ -11,10 +11,10 @@ document.getElementById('send_bulk_messages_button').addEventListener('click', s
 async function sendBulkMessages() {
     const phoneNumbers = document.getElementById('bulk_phone_numbers').value.split(',').map(num => num.trim());
     const templateName = document.getElementById('bulk_template_name').value;
-
+    document.getElementById('error').innerText ='';
     // Validate inputs
     if (!phoneNumbers[0] || !templateName) {
-        document.getElementById('bulk_response').innerText = "Please provide valid phone numbers and select a template.";
+        document.getElementById('error').innerText = "Please provide valid phone numbers and select a template.";
         return;
     }
 
@@ -23,7 +23,7 @@ async function sendBulkMessages() {
     const invalidNumbers = phoneNumbers.filter(num => !isValidPhone(num));
 
     if (invalidNumbers.length) {
-        document.getElementById('bulk_response').innerText = `Invalid phone numbers: ${invalidNumbers.join(', ')}`;
+        document.getElementById('error').innerText = `Invalid phone numbers: ${invalidNumbers.join(', ')}`;
         return;
     }
 
@@ -41,7 +41,7 @@ async function sendBulkMessages() {
         console.log(result)
         result.forEach(results=>{
             if(results.hasOwnProperty('error')){
-                document.getElementById('bulk_response').innerText += `The ${results.phone_number}  ${results.error}\n`;
+                document.getElementById('error').innerText += `The ${results.phone_number}  ${results.error}\n`;
                 
             //     alert('Invalid phone number or template error!');
             }
@@ -52,7 +52,7 @@ async function sendBulkMessages() {
                 }
         })
     } catch (error) {
-         document.getElementById('bulk_response').innerText = "Error sending bulk messages.";
+         document.getElementById('error').innerText = "Error sending bulk messages.";
         console.error(error);
     }
 }

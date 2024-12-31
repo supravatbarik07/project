@@ -4,23 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Send Messages to Department Employees</h1>
+    <section>
+        <h1>Send Messages to Department Employees</h1>
 
     <!-- Department selection -->
-    <div>
-        <label for="department_dropdown">Select Department:</label>
-        <select id="department_dropdown">
-            <option value="">-- Select a Department --</option>
-        </select>
-        <select id="message_to_department">
-            <option value="hello_world">hello_world</option>
-        </select>
-        <button id="sendDepartmentMessages">Send Messages</button>
+    <div class="inputs_from_user">
+        <div class="emp_deprt">
+            <div class="department">
+                <label for="department_dropdown" style="margin-left: 10px;">Select Department:</label>
+            <select id="department_dropdown">
+                <option value="">-- Select a Department --</option>
+            </select>
+            </div>
+            <div class="temp">
+                <label for="department_dropdown" style="margin-left: 10px;">Select Template:</label>
+            <select id="message_to_department">
+                <option value="hello_world">hello_world</option>
+            </select>
+            </div>
+        </div>
+        <button id="sendDepartmentMessages" class="meta_details">Send Messages</button>
         <p id="department_response"></p>
-        <p id="department_error_response"></p>
+        <p id="error" style="color: red;"></p>
     </div>
+    </section>
     <script  type="module" src="teamwise_bulk_messages.js"></script>
 </body>
 </html>

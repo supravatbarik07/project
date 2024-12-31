@@ -4,20 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-    <div>
-        <h2>Send Bulk excel Template Messages</h2>
-         <p>upload an Excel file:</p>
-        <input type="file" id="bulk_file_input" accept=".xls,.xlsx"><br>
+   <section>
+    <h1>Send Bulk excel Template Messages</h1>
+    <div class="inputs_from_user">
+        <label style="margin-left: 10px;">Upload an Excel file:</label>
+        <div id="excel_input">
+            <input type="file" id="bulk_file_input" accept=".xls,.xlsx">    
         <select id="bulk_excel_template_name">
             <option value="hello_world">hello_world</option>
         </select>
-        <button id="sendExcelBulkMessages">Send Bulk Messages from Excel</button><br>
-        <button id="btn">Clear File</button>
-        <p id="excel_response"></p>
     </div>
+        <div class="btns">
+            <button id="sendExcelBulkMessages" class="meta_details">Send  Messages</button>
+        <button id="btn" class="meta_details">Clear File</button>
+        </div>
+        <p id="excel_response"></p>
+        <p id="error" style="color: red;"></p>
+    </div>
+   </section>
     <script type="module" src="bulk_excel_message.js"></script>
 </body>
 </html>

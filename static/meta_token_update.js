@@ -1,8 +1,3 @@
-
-// import { fetchTemplates } from './script.js';
-
-// window.addEventListener('load', fetchTemplates);
-
 const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
 
 
@@ -22,11 +17,11 @@ async function updateMetaDetails() {
     })
 
     const result= await response.json();
-    console.log(result)
     if(response.ok){
         alert('Recored updeted successfully')
     }else{
-        alert('somthing error'+result)
+        // alert('somthing error'+result)
+        document.getElementById('error').innerText=`${result.error}`
     }
 }
 meta_update_token.addEventListener('click',updateMetaDetails);

@@ -4,17 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div>
-        <h2>Send Bulk Template Messages</h2>
-        <textarea id="bulk_phone_numbers" placeholder="Enter phone numbers separated by commas (e.g., 919861781550, 919876543210)"></textarea>
-        <select id="bulk_template_name">
-            <option value="hello_world">hello_world</option>
-        </select>
-        <button id="send_bulk_messages_button">Send Bulk Messages</button>
-        <p id="bulk_response"></p>
-    </div>
+    <section>
+        <h1>Send Bulk Template Messages</h1>
+        <div class="inputs_from_user">
+            <textarea id="bulk_phone_numbers" placeholder="Enter phone numbers separated by commas"></textarea>
+            <div class="box">
+                <select id="bulk_template_name">
+                    <option value="hello_world">hello_world</option>
+                </select>
+                <button id="send_bulk_messages_button" class="meta_details">Send Bulk Messages</button>
+            </div>
+            <p id="bulk_response"></p>
+            <p id="error" style="color: red;"></p>
+        </div>
+    </section>
     <script type="module" src="bulk_message_services.js"></script>
 </body>
 </html>

@@ -15,8 +15,9 @@ let extractedPhoneNumbers = [];
 // File input change event listener to process the Excel file
 const fileInput = document.getElementById('bulk_file_input');
 fileInput.addEventListener('change', () => {
+    document.getElementById('error').innerText=``;
     if (!fileInput.files.length) {
-        alert("Please select an Excel file.");
+        document.getElementById('error').innerText=`Please select an Excel file`;
         return;
     }
 
@@ -48,10 +49,10 @@ document.getElementById('sendExcelBulkMessages').addEventListener('click',sendEx
 // Function to send bulk template messages using input excel
 async function sendExcelBulkMessages() {
     const templateName = document.getElementById('bulk_excel_template_name').value;
-
+    document.getElementById('error').innerText=``;
     // Validate inputs
     if (!extractedPhoneNumbers.length || !templateName) {
-        document.getElementById('excel_response').innerText = "Please upload an Excel file with valid phone numbers and select a template.";
+        document.getElementById('error').innerText = "Please upload an Excel file with valid phone numbers and select a template.";
         return;
     }
 
@@ -60,7 +61,7 @@ async function sendExcelBulkMessages() {
     const invalidNumbers = extractedPhoneNumbers.filter(num => !isValidPhone(num));
 
     if (invalidNumbers.length) {
-        document.getElementById('excel_response').innerText = `Invalid phone numbers: ${invalidNumbers.join(', ')}`;
+        document.getElementById('error').innerText = `Invalid phone numbers: ${invalidNumbers.join(', ')}`;
         return;
     }
 
@@ -79,13 +80,13 @@ async function sendExcelBulkMessages() {
         console.log(result);
         result.forEach(results => {
             if (results.hasOwnProperty('error')) {
-                document.getElementById('excel_response').innerText += `${results.phone_number} ${results.error}\n`;
+                document.getElementById('error').innerText += `${results.phone_number} ${results.error}\n`;
             } else {
                 document.getElementById('excel_response').innerText += `Message sent successfully to ${results.phone_number}\n`;
             }
         });
     } catch (error) {
-        document.getElementById('excel_response').innerText = "Error sending bulk messages.";
+        document.getElementById('error').innerText = "Error sending bulk messages.";
         console.error(error);
     }
 }
