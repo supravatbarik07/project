@@ -1,4 +1,4 @@
-import { fetchTemplates,populateDropdown } from './script.js';
+import { fetchTemplates,populateDropdown,addAnimation,removeAnimation } from './script.js';
 
 window.addEventListener('load', async () => {
     const templates = await fetchTemplates();
@@ -17,6 +17,7 @@ const fileInput = document.getElementById('bulk_file_input');
 fileInput.addEventListener('change', () => {
     document.getElementById('error').innerText=``;
     if (!fileInput.files.length) {
+        removeAnimation()
         document.getElementById('error').innerText=`Please select an Excel file`;
         return;
     }
@@ -52,6 +53,7 @@ async function sendExcelBulkMessages() {
     document.getElementById('error').innerText=``;
     // Validate inputs
     if (!extractedPhoneNumbers.length || !templateName) {
+        removeAnimation();
         document.getElementById('error').innerText = "Please upload an Excel file with valid phone numbers and select a template.";
         return;
     }
@@ -61,10 +63,11 @@ async function sendExcelBulkMessages() {
     const invalidNumbers = extractedPhoneNumbers.filter(num => !isValidPhone(num));
 
     if (invalidNumbers.length) {
+        removeAnimation()
         document.getElementById('error').innerText = `Invalid phone numbers: ${invalidNumbers.join(', ')}`;
         return;
     }
-
+      addAnimation();
     try {
         // Provide feedback during processing
         document.getElementById('excel_response').innerText = "Sending messages, please wait...";
@@ -88,6 +91,9 @@ async function sendExcelBulkMessages() {
     } catch (error) {
         document.getElementById('error').innerText = "Error sending bulk messages.";
         console.error(error);
+    }
+    finally{
+        removeAnimation();
     }
 }
       const clearInputs=document.getElementById('btn')

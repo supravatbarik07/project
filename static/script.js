@@ -51,7 +51,18 @@ export async function fetchDepartments() {
     }
 }
 
-
+export async function addAnimation(){
+    document.querySelector('.loader').style.display = 'block';
+    document.querySelector('.loader-container').classList.remove('invisible');
+    document.querySelector('.loader-container').classList.add('visible');
+    document.getElementById("blur-bg").classList.add("visible");
+}
+export async function removeAnimation(){
+    document.querySelector('.loader').style.display = 'block';
+    document.querySelector('.loader-container').classList.add('invisible');
+    document.querySelector('.loader-container').classList.remove('visible');
+    document.getElementById("blur-bg").classList.remove("visible");
+}
 
 // Call this function to fetch templates and departments when the page loads
 // window.addEventListener('load', fetchTemplates);

@@ -1,4 +1,4 @@
-import { fetchTemplates, fetchDepartments, populateDropdown } from './script.js';
+import { fetchTemplates, fetchDepartments, populateDropdown,addAnimation,removeAnimation } from './script.js';
 
 window.addEventListener('load', async () => {
     try {
@@ -21,10 +21,11 @@ async function sendDepartmentMessages() {
     const templateName = document.getElementById('message_to_department').value;
     document.getElementById('error').innerText=''
     if (!department || !templateName) {
+        removeAnimation();
         document.getElementById('error').innerText='Please select a department and provide a template name.'
         return;
     }
-
+     addAnimation()
     try {
         document.getElementById('department_response').innerText = "Sending messages, please wait...";
         const response = await fetch(`${backendUrl}/send-department-message`, {
@@ -47,5 +48,8 @@ async function sendDepartmentMessages() {
        }
     } catch (error) {
         document.getElementById('error').innerText = `error in sending department message`;
+    }
+    finally{
+        removeAnimation();
     }
 }

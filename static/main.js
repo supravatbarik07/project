@@ -29,5 +29,14 @@ options.addEventListener('click', (event) => {
     const fileToLoad = event.target.getAttribute('data-file');
     if (fileToLoad) {
         iframe.src = fileToLoad;
+        sessionStorage.setItem('lastPage', fileToLoad); // Save the loaded page to sessionStorage
+    }
+});
+
+// Load the last visited page on page refresh
+document.addEventListener('DOMContentLoaded', () => {
+    const lastPage = sessionStorage.getItem('lastPage');
+    if (lastPage) {
+        iframe.src = lastPage;
     }
 });

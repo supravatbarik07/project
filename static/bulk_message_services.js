@@ -1,4 +1,4 @@
-import { fetchTemplates,populateDropdown } from './script.js';
+import { fetchTemplates,populateDropdown,addAnimation,removeAnimation } from './script.js';
 
 window.addEventListener('load', async () => {
     const templates = await fetchTemplates();
@@ -6,6 +6,8 @@ window.addEventListener('load', async () => {
 });
 
 const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
+
+
 document.getElementById('send_bulk_messages_button').addEventListener('click', sendBulkMessages);
 //Bulk messaging
 async function sendBulkMessages() {
@@ -14,6 +16,7 @@ async function sendBulkMessages() {
     document.getElementById('error').innerText ='';
     // Validate inputs
     if (!phoneNumbers[0] || !templateName) {
+        removeAnimation()
         document.getElementById('error').innerText = "Please provide valid phone numbers and select a template.";
         return;
     }
@@ -23,10 +26,11 @@ async function sendBulkMessages() {
     const invalidNumbers = phoneNumbers.filter(num => !isValidPhone(num));
 
     if (invalidNumbers.length) {
+        removeAnimation()
         document.getElementById('error').innerText = `Invalid phone numbers: ${invalidNumbers.join(', ')}`;
         return;
     }
-
+    addAnimation()
     try {
         // Provide feedback during processing
         document.getElementById('bulk_response').innerText = "Sending messages, please wait...";
@@ -54,5 +58,8 @@ async function sendBulkMessages() {
     } catch (error) {
          document.getElementById('error').innerText = "Error sending bulk messages.";
         console.error(error);
+    }
+    finally{
+        removeAnimation();
     }
 }
