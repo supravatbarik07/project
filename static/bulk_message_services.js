@@ -1,11 +1,11 @@
 import { fetchTemplates,populateDropdown,addAnimation,removeAnimation } from './script.js';
-
+import { backendUrl } from './config.js';
 window.addEventListener('load', async () => {
     const templates = await fetchTemplates();
     populateDropdown('bulk_template_name', templates);
 });
 
-const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
+//const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
 
 
 document.getElementById('send_bulk_messages_button').addEventListener('click', sendBulkMessages);
@@ -22,14 +22,18 @@ async function sendBulkMessages() {
     }
 
     // Validate phone numbers format
-    const isValidPhone = phone => /^[0-9]{10,15}$/.test(phone);
+    const isValidPhone = phone => /^[1-9]{1}[0-9]{1,3}[0-9]{10,15}$/.test(phone);
     const invalidNumbers = phoneNumbers.filter(num => !isValidPhone(num));
-
+    const validNumbers = phoneNumbers.filter(isValidPhone);
     if (invalidNumbers.length) {
         removeAnimation()
         document.getElementById('error').innerText = `Invalid phone numbers: ${invalidNumbers.join(', ')}`;
+    }
+     
+    if (validNumbers.length === 0) {
         return;
     }
+
     addAnimation()
     try {
         // Provide feedback during processing
@@ -38,7 +42,7 @@ async function sendBulkMessages() {
         const response = await fetch(`${backendUrl}/send-bulk-messages`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone_numbers: phoneNumbers, template_name: templateName })
+            body: JSON.stringify({ phone_numbers: validNumbers, template_name: templateName })
         });
         document.getElementById('bulk_response').innerText = '';
         const result = await response.json();

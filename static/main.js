@@ -40,3 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
         iframe.src = lastPage;
     }
 });
+
+// const moon=document.getElementById('moon');
+
+//         moon.addEventListener('click',()=>{
+//             document.querySelector('body').classList.toggle('dark-mode')
+//         })

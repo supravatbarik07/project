@@ -1,7 +1,7 @@
 import { addAnimation,removeAnimation } from './script.js';
+import { backendUrl } from './config.js';
 
-
-const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
+// const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
 
 //update meta Token, Phone_number_id, whatsapp_number_id
 const meta_update_token=document.getElementById('meta_details');

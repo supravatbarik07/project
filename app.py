@@ -9,7 +9,7 @@ import time
 from threading import Thread, Lock
 import subprocess
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # Enable CORS for all routes
 CORS(app)

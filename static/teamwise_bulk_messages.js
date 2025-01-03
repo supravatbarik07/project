@@ -1,5 +1,5 @@
-import { fetchTemplates, fetchDepartments, populateDropdown,addAnimation,removeAnimation } from './script.js';
-
+import { fetchTemplates, fetchDepartments, populateDropdown,addAnimation,removeAnimation} from './script.js';
+import { backendUrl } from './config.js';
 window.addEventListener('load', async () => {
     try {
         // Fetch and populate templates
@@ -12,7 +12,7 @@ window.addEventListener('load', async () => {
         console.error('Error during page load:', error);
     }
 });
-const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
+//const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
 
 document.getElementById('sendDepartmentMessages').addEventListener('click',sendDepartmentMessages)
 // Send messages to department employees
