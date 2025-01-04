@@ -1,4 +1,6 @@
-const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
+import { backendUrl } from './config.js';
+
+//const backendUrl = 'http://127.0.0.1:5500';  // Replace with your backend URL
 
 // Fetch and populate additional templates in the dropdown
 export async function fetchTemplates() {

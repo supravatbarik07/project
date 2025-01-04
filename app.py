@@ -499,6 +499,94 @@ def send_department_message():
         error_message = f"An unexpected error occurred: {e}"
         print(f"Error: {error_message}")
         return jsonify({"error": error_message}), 500
+    
+ #fetch Employee_names   
+@app.route('/employeename', methods=['post'])
+def get_employeename():
+    data=request.json
+    employee=data.get('employee')
+    if not employee:
+        return jsonify({"error":[{"error":"Missing Employee Names"}]}), 400
+    
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT NAME,employee_id FROM employee_details where name= :emp",{"emp":employee})
+    employeename = [{"name":row[0],"employee_id":row[1]} for row in cursor.fetchall()]
+    cursor.close()
+    connection.close()
+
+    if not employeename:
+        return jsonify([{"error": f"No records found for employee {employee}"}]), 404
+    return jsonify(employeename)
+
+@app.route('/send-employee-message', methods=['POST'])
+def send_employee_message():
+    try:
+        data = request.json
+        employee = data.get('employee')
+        template_name = data.get('template_name')
+        department=data.get('department')
+
+        if not employee or not template_name or not department:
+            error_message = "Missing Employee or template name"
+            print(f"Error: {error_message}")
+            return jsonify({"error": error_message}), 400
+
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Fetch employee phone numbers in the department
+        cursor.execute("SELECT phone_number FROM employee_details WHERE name = :emp AND department = :dept", {"emp": employee,"dept":department})
+        phone_numbers = [row[0] for row in cursor.fetchall()]
+
+        if not phone_numbers:
+            cursor.close()
+            connection.close()
+            error_message = f"No employees found with this {employee} name"
+            print(f"Error: {error_message}")
+            return jsonify({"error": error_message}), 404
+
+        # Simulate sending messages
+        sent_messages = []
+        errors = []
+        for phone_number in phone_numbers:
+            response = send_whatsapp_template_message(phone_number, template_name)
+
+            if not response["status"]:
+                errors.append({
+                    "phone_number": phone_number,
+                    "error": response["error"]
+                })
+                print(f"Error sending message to {phone_number}: {response['error']}")
+            else:
+                sent_messages.append({
+                    "phone_number": phone_number,
+                    "response": response
+                })
+                print(f"Message sent to {phone_number}: {response}")
+
+        cursor.close()
+        connection.close()
+
+        result = {
+            "sent_messages": sent_messages,
+            "errors": errors,
+            "summary": {
+                "total": len(phone_numbers),
+                "successful": len(sent_messages),
+                "failed": len(errors)
+            }
+        }
+
+        print(f"Successfully processed {len(sent_messages)} messages and encountered {len(errors)} errors for the employee {employee}")
+        print(f"Encountered error:- {errors}")
+        return jsonify(result)
+
+    except Exception as e:
+        error_message = f"An unexpected error occurred: {e}"
+        print(f"Error: {error_message}")
+        return jsonify({"error": error_message}), 500
+    
 
 if __name__ == '__main__':
     Thread(target=fetch_access_token_periodically, daemon=True).start()

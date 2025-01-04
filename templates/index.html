@@ -24,8 +24,14 @@
             <a href="##" data-file="{{ url_for('static', filename='Teamwise_bulk_messages.html') }}">TeamWise bulk messages</a>
         </div>
         </div>
+        <div class="menu-icon" id="menu-icon">
+            <div class="line top"></div>
+            <div class="line middle"></div>
+            <div class="line bottom"></div>
+        </div>
     </nav>
-    <iframe id="content_iframe" style="width: 100%; height: 100vh; border: none;"></iframe>
+    <iframe id="content_iframe" style="width: 100%; height: 100vh; border: none;"
+    data-default-page="{{ url_for('static', filename='meta_token_update.html') }}"></iframe>
     <script src="../static/main.js?v=1.0.1"></script>
 </body>
 </html>

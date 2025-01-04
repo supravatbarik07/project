@@ -34,12 +34,29 @@ options.addEventListener('click', (event) => {
 });
 
 // Load the last visited page on page refresh
+// document.addEventListener('DOMContentLoaded', () => {
+//     const lastPage = sessionStorage.getItem('lastPage');
+//     if (lastPage) {
+//         iframe.src = lastPage;
+//     }
+// });
+
+//to meke default page 
 document.addEventListener('DOMContentLoaded', () => {
+    //const iframe = document.getElementById('content_iframe');
     const lastPage = sessionStorage.getItem('lastPage');
-    if (lastPage) {
-        iframe.src = lastPage;
-    }
+    const defaultPage = iframe.getAttribute('data-default-page');
+    // Default to "Meta Token Update" page if no last page is saved
+    iframe.src = lastPage || defaultPage;
 });
+
+const menuIcon=document.getElementById('menu-icon');
+
+menuIcon.addEventListener('click',()=>{
+    menuIcon.classList.toggle('active');
+})
+
+
 
 // const moon=document.getElementById('moon');
 
