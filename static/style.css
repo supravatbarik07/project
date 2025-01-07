@@ -149,6 +149,7 @@ section > .inputs_from_user{
     padding: 1em;
     box-shadow: 0 8px 15px rgba(237, 111, 111, 0.2); 
     border-radius: 10px;
+    position: relative;
 }
 input {
     /* text-align: center; Center placeholder horizontally */
@@ -240,10 +241,53 @@ select:hover {
 .emp_deprt{
     display: flex;
     justify-content: space-around;
+    margin: 40px 0;
 }
-#sendDepartmentMessages{
-    margin-top: 5rem;
+.inputs_from_user > #employeeDropdown {
+    position:absolute;
+    top: 31%;
+    left: 3.2%;
+    width: 93.5%;
+    overflow-y: auto; 
+    max-height: 200px;
+    border: 1px solid #ccc; 
+    /* border-top: none; */
+    background: red; 
+    z-index: 1000; 
+    display: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    border-radius: 0 0 8px 8px; 
+    padding: 0;
+    margin-top: 0; 
 }
+
+#employeeDropdown li {
+    font-size: 16px;
+    padding: 10px 15px; 
+    cursor: pointer;
+    border-bottom: 1px solid #f4f4f9; 
+    list-style: none; 
+    transition: background-color 0.3s ease, color 0.3s ease; 
+}
+
+#employeeDropdown li:last-child {
+    border-bottom: none; 
+}
+
+#employeeDropdown li:hover {
+    background-color: #f0f8ff; 
+    color: #007BFF;}
+
+#employeeDropdown li:active {
+    background-color: #e7f3ff; 
+}
+
+#response {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #333;
+}
+
 /***********************************LOADER ANIMATION*****************************/
 .loader-container{
     position: absolute;

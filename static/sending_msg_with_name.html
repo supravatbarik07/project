@@ -4,31 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <section>
+    <div class="inputs_from_user">
     <label for="username">Please Enter Name for search:</label><br>
-    <input type="text" placeholder="Search Employee name" id="empName">
+    <input type="text" placeholder="Search Employee name" id="empName" autocomplete="off">
+    <ul id="employeeDropdown">
+    </ul>
+    <div class="emp_deprt">
+        <div class="department">
+            <label for="department_dropdown" style="margin-left: 10px;">Select Department:</label>
+        <select id="department_dropdown">
+            <option value="">-- Select a Department --</option>
+        </select>
+        </div>
+        <div class="temp">
+            <label for="department_dropdown" style="margin-left: 10px;">Select Template:</label>
+        <select id="message_to_department">
+            <option value="hello_world">hello_world</option>
+        </select>
+        </div>
+    </div>
+    <button id="sendMessage" class="meta_details">Send Message</button>
     <p id="response"></p>
-<script>
-    const backendUrl = 'http://127.0.0.1:5500';
-
-    
-    async function sendMessageToEmployee() {
-        const empName=document.getElementById('empName').value;
-        try{
-            const response=await fetch(`${backendUrl}/employeename`,{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({employee:empName})
-            })
-            const result=await response.json();
-            console.log(result)
-        }
-        catch{
-              
-        }
-    }
-    document.getElementById('empName').addEventListener('change',sendMessageToEmployee)
-</script>
+    </div>
+</section>
+<div class="blur-background" id="blur-bg"></div>
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    <script  type="module" src="sending_msg_with_name.js">
+    </script>
 </body>
 </html>

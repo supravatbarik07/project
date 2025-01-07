@@ -46,7 +46,7 @@ async function sendBulkMessages() {
         });
         document.getElementById('bulk_response').innerText = '';
         const result = await response.json();
-        console.log(result)
+        //console.log(result)
         result.forEach(results=>{
             if(results.hasOwnProperty('error')){
                 document.getElementById('error').innerText += `The ${results.phone_number}  ${results.error}\n`;

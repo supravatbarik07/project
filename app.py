@@ -501,23 +501,33 @@ def send_department_message():
         return jsonify({"error": error_message}), 500
     
  #fetch Employee_names   
-@app.route('/employeename', methods=['post'])
+@app.route('/employeename', methods=['POST'])
 def get_employeename():
-    data=request.json
-    employee=data.get('employee')
+    data = request.json
+    employee = data.get('employee')
+
     if not employee:
-        return jsonify({"error":[{"error":"Missing Employee Names"}]}), 400
-    
+        return jsonify([{"error": "Missing Employee Names"}]), 400
+
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT NAME,employee_id FROM employee_details where name= :emp",{"emp":employee})
-    employeename = [{"name":row[0],"employee_id":row[1]} for row in cursor.fetchall()]
+
+    # Modified SQL query to match partial names using LIKE
+    search_query = f"%{employee}%"  # Matches anywhere in the name
+    cursor.execute(
+        "SELECT NAME, employee_id FROM employee_details WHERE name LIKE :emp",
+        {"emp": search_query}
+    )
+
+    employeename = [{"name": row[0], "employee_id": row[1]} for row in cursor.fetchall()]
     cursor.close()
     connection.close()
 
     if not employeename:
-        return jsonify([{"error": f"No records found for employee {employee}"}]), 404
+        return jsonify([{"error": f"No records found for {employee}"}]), 404
+
     return jsonify(employeename)
+
 
 @app.route('/send-employee-message', methods=['POST'])
 def send_employee_message():
@@ -538,11 +548,11 @@ def send_employee_message():
         # Fetch employee phone numbers in the department
         cursor.execute("SELECT phone_number FROM employee_details WHERE name = :emp AND department = :dept", {"emp": employee,"dept":department})
         phone_numbers = [row[0] for row in cursor.fetchall()]
-
+        
         if not phone_numbers:
             cursor.close()
             connection.close()
-            error_message = f"No employees found with this {employee} name"
+            error_message = f"No employees found with this {employee} name with {department} Department"
             print(f"Error: {error_message}")
             return jsonify({"error": error_message}), 404
 

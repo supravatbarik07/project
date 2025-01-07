@@ -35,7 +35,7 @@ async function sendDepartmentMessages() {
         });
 
         const result = await response.json();
-        console.log(result);
+        //console.log(result);
         if (result) {
             document.getElementById('department_response').innerText = `Message Sent to ${department} Department`;
         } else {
