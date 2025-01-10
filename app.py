@@ -504,29 +504,64 @@ def send_department_message():
 @app.route('/employeename', methods=['POST'])
 def get_employeename():
     data = request.json
-    employee = data.get('employee')
+    employee = data.get('employee')  # Get employee name
+    employee_id = data.get('employee_id')  # Get employee ID
 
-    if not employee:
-        return jsonify([{"error": "Missing Employee Names"}]), 400
+    if not employee and not employee_id:
+        return jsonify([{"error": "Missing Employee Name or Employee ID"}]), 400
 
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # Modified SQL query to match partial names using LIKE
-    search_query = f"%{employee}%"  # Matches anywhere in the name
-    cursor.execute(
-        "SELECT NAME, employee_id FROM employee_details WHERE name LIKE :emp",
-        {"emp": search_query}
-    )
+    try:
+        # Build the query dynamically with deduplication logic
+        query = """
+        WITH DeduplicatedData AS (
+            SELECT employee_id, name, department,
+                   ROW_NUMBER() OVER (PARTITION BY LOWER(employee_id) ORDER BY LOWER(name), LOWER(department)) AS rn
+            FROM employee_details
+            WHERE 1=1
+        )
+        SELECT employee_id, name, department
+        FROM DeduplicatedData
+        WHERE rn = 1
+        """
+        params = {}
 
-    employeename = [{"name": row[0], "employee_id": row[1]} for row in cursor.fetchall()]
-    cursor.close()
-    connection.close()
+        if employee:
+            query += " AND LOWER(name) LIKE LOWER(:emp)"
+            params['emp'] = f"%{employee}%"
 
-    if not employeename:
-        return jsonify([{"error": f"No records found for {employee}"}]), 404
+        if employee_id:
+            query += " AND LOWER(employee_id) LIKE LOWER(:eid)"
+            params['eid'] = f"%{employee_id}%"
 
-    return jsonify(employeename)
+        cursor.execute(query, params)
+
+        # Fetch results
+        result_set = cursor.fetchall()
+        cursor.close()
+        connection.close()
+
+        # Deduplicate records in Python by combining keys
+        seen_records = set()
+        employeename = []
+        for row in result_set:
+            record_key = (row[0], row[1], row[2])  # (employee_id, name, department)
+            if record_key not in seen_records:
+                seen_records.add(record_key)
+                employeename.append({"employee_id": row[0], "name": row[1], "department": row[2]})
+
+        if not employeename:
+            return jsonify([{"error": "No records found"}]), 404
+
+        return jsonify(employeename)
+
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        return jsonify({"error": str(e)}), 500
+
 
 
 @app.route('/send-employee-message', methods=['POST'])
@@ -536,6 +571,7 @@ def send_employee_message():
         employee = data.get('employee')
         template_name = data.get('template_name')
         department=data.get('department')
+        employee_id=data.get('employee_id')
 
         if not employee or not template_name or not department:
             error_message = "Missing Employee or template name"
@@ -546,13 +582,20 @@ def send_employee_message():
         cursor = connection.cursor()
 
         # Fetch employee phone numbers in the department
-        cursor.execute("SELECT phone_number FROM employee_details WHERE name = :emp AND department = :dept", {"emp": employee,"dept":department})
+        cursor.execute("""
+    SELECT phone_number 
+    FROM employee_details 
+    WHERE LOWER(name) = LOWER(:emp) 
+    AND LOWER(department) = LOWER(:dept) 
+    AND LOWER(employee_id) = LOWER(:empid)
+""", {"emp": employee, "dept": department, "empid": employee_id})
+        print(f"Employee: {employee}, Department: {department}, Employee ID: {employee_id}")
         phone_numbers = [row[0] for row in cursor.fetchall()]
         
         if not phone_numbers:
             cursor.close()
             connection.close()
-            error_message = f"No employees found with this {employee} name with {department} Department"
+            error_message = f"No employees found with {employee} employee name with {employee_id} employee id for {department} Department"
             print(f"Error: {error_message}")
             return jsonify({"error": error_message}), 404
 

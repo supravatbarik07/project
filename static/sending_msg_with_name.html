@@ -8,34 +8,30 @@
 </head>
 <body>
     <section>
-    <div class="inputs_from_user">
-    <label for="username">Please Enter Name for search:</label><br>
-    <input type="text" placeholder="Search Employee name" id="empName" autocomplete="off">
-    <ul id="employeeDropdown">
-    </ul>
-    <div class="emp_deprt">
-        <div class="department">
-            <label for="department_dropdown" style="margin-left: 10px;">Select Department:</label>
-        <select id="department_dropdown">
-            <option value="">-- Select a Department --</option>
-        </select>
+        <h1>Send Messages to Employee</h1>
+        <div class="inputs_from_user">
+            <label for="username">Please Enter Name for search:</label><br>
+            <input type="text" placeholder="Search Employee name" id="empName" autocomplete="off">
+            <div class="dropdown-place">
+                <ul id="employeeDropdown"></ul>
+            </div>
+            <div id="selectedEmployees" class="selected-employees">
+                <!-- Selected employee blocks will be added here -->
+            </div>
+            <div class="message_temp">
+                <label for="department_dropdown" style="margin-left: 10px;">Select Template:</label>
+                <select id="message_to_department">
+                    <option value="hello_world">hello_world</option>
+                </select>
+                <button id="sendMessage" class="meta_details">Send Message</button>
+            </div>
+            <p id="response"></p>
         </div>
-        <div class="temp">
-            <label for="department_dropdown" style="margin-left: 10px;">Select Template:</label>
-        <select id="message_to_department">
-            <option value="hello_world">hello_world</option>
-        </select>
-        </div>
-    </div>
-    <button id="sendMessage" class="meta_details">Send Message</button>
-    <p id="response"></p>
-    </div>
-</section>
-<div class="blur-background" id="blur-bg"></div>
+    </section>
+    <div class="blur-background" id="blur-bg"></div>
     <div class="loader-container">
         <div class="loader"></div>
     </div>
-    <script  type="module" src="sending_msg_with_name.js">
-    </script>
+    <script  type="module" src="sending_msg_with_name.js"></script>
 </body>
 </html>

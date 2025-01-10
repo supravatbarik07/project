@@ -119,7 +119,7 @@ nav{
 
 section{
     height: 100vh;
-    /* border: 1px solid red; */
+    /*border: 1px solid red; */
     overflow-y: hidden; /* Allow scrolling */
     -ms-overflow-style: none; /* Hide scrollbar in IE 10+ */
     scrollbar-width: none; /* Hide scrollbar in Firefox */
@@ -238,16 +238,27 @@ select:hover {
     flex-direction: column;
     gap: 5px;
 }
+.message_temp{
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+}
 .emp_deprt{
     display: flex;
     justify-content: space-around;
     margin: 40px 0;
 }
-.inputs_from_user > #employeeDropdown {
-    position:absolute;
-    top: 31%;
-    left: 3.2%;
-    width: 93.5%;
+#empName {
+    margin-bottom: 0; 
+}
+.dropdown-place{
+    width: 100%;
+    position: relative;
+}
+.dropdown-place > #employeeDropdown {
+    position: absolute;
+    width: 100%;
     overflow-y: auto; 
     max-height: 200px;
     border: 1px solid #ccc; 
@@ -261,7 +272,7 @@ select:hover {
     margin-top: 0; 
 }
 
-#employeeDropdown li {
+.dropdown-place li {
     font-size: 16px;
     padding: 10px 15px; 
     cursor: pointer;
@@ -270,16 +281,49 @@ select:hover {
     transition: background-color 0.3s ease, color 0.3s ease; 
 }
 
-#employeeDropdown li:last-child {
+.dropdown-place li:last-child {
     border-bottom: none; 
 }
 
-#employeeDropdown li:hover {
+.dropdown-place li:hover {
     background-color: #f0f8ff; 
     color: #007BFF;}
 
-#employeeDropdown li:active {
+.dropdown-place li:active {
     background-color: #e7f3ff; 
+}
+/* Styling for selected employee blocks */
+.selected-employees {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.selected-employee {
+    display: flex;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+.selected-employee span {
+    margin-right: 10px;
+}
+
+.selected-employee .close-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.selected-employee .close-btn:hover {
+    background-color: darkred;
 }
 
 #response {
